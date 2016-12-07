@@ -38,6 +38,7 @@
 <p>启动后查看zookeeper是否启动成功：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/zkServer.sh status</div></pre></td></tr></table></figure>
 <p>停止zookeeper：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/zkServer.sh stop</div></pre></td></tr></table></figure></p>
+<h2 id="五、参考资料"><a href="#五、参考资料" class="headerlink" title="五、参考资料"></a>五、参考资料</h2><p><a href="https://zookeeper.apache.org/doc/trunk/zookeeperStarted.html" target="_blank" rel="external">Apache Zookeeper GettingStart</a><br><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/" target="_blank" rel="external">分布式服务框架Zookeeper(IBM DevelopWorks中国)</a></p>
 <p>（完结）</p>
 ]]></content>
     </entry>
