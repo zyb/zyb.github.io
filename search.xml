@@ -14,7 +14,7 @@
 <h2 id="Zookeeper源码编译"><a href="#Zookeeper源码编译" class="headerlink" title="Zookeeper源码编译"></a>Zookeeper源码编译</h2><h3 id="源码下载"><a href="#源码下载" class="headerlink" title="源码下载"></a>源码下载</h3><p>从github上下载zookeeper源码</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ git <span class="built_in">clone</span> https://github.com/apache/zookeeper.git</div></pre></td></tr></table></figure>
 <h3 id="源码编译"><a href="#源码编译" class="headerlink" title="源码编译"></a>源码编译</h3><p>zookeeper使用ant管理项目，因此编译zookeeper使用ant工具，使用以下命令，最终在build文件夹下生成’zookeeper-<version>.tar.gz’，这个包就是最后zookeeper编译完成生成的包，如果只使用’ant package’命令，则不会生成.tar.gz这个包，只会生成’zookeeper-<version>‘这个目录，这个目录包含了所有的</version></version></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ <span class="built_in">cd</span> zookeeper			</div><div class="line">$ ant package tar</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ <span class="built_in">cd</span> zookeeper</div><div class="line">$ ant package tar</div></pre></td></tr></table></figure>
 <p>如果有需要用eclipse打开，可以通过以下命令生成eclipse的project，在eclipse中通过导入’已存在的eclipse项目‘，将zookeeper导入到eclipse中</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ant eclipse</div></pre></td></tr></table></figure>
 <h2 id="Zookeeper部署"><a href="#Zookeeper部署" class="headerlink" title="Zookeeper部署"></a>Zookeeper部署</h2><ol>
