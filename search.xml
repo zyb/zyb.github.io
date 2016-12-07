@@ -4,9 +4,37 @@
   
     
     <entry>
-      <title><![CDATA[Zookeeper编译、部署、配置]]></title>
-      <url>https://zyb.github.io/2016/12/06-zookeeper-complier-install.html</url>
-      <content type="html"><![CDATA[<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><ul>
+      <title><![CDATA[Jstorm从源码编译及配置部署]]></title>
+      <url>https://zyb.github.io/2016/12/07-jstorm-install.html</url>
+      <content type="html"><![CDATA[<h2 id="一、环境"><a href="#一、环境" class="headerlink" title="一、环境"></a>一、环境</h2><ul>
+<li>Jstorm使用的当前稳定版本2.1.1</li>
+<li>JDK使用1.7</li>
+<li>archlinux x64操作系统</li>
+<li>Jstorm依赖zookeeper，参考之前的 <a href="/2016/12/06-zookeeper-install.html">Zookeeper从源码编译及配置部署</a></li>
+</ul>
+<h2 id="二、Jstorm编译"><a href="#二、Jstorm编译" class="headerlink" title="二、Jstorm编译"></a>二、Jstorm编译</h2><h3 id="源码下载"><a href="#源码下载" class="headerlink" title="源码下载"></a>源码下载</h3><p>从github上下载Jstorm源码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ git <span class="built_in">clone</span> https://github.com/alibaba/jstorm.git</div></pre></td></tr></table></figure>
+<h3 id="源码编译"><a href="#源码编译" class="headerlink" title="源码编译"></a>源码编译</h3><p>Jstorm是java编写的，使用maven进行包管理，因此编译就比较简单了，直接通过下面得的maven命令就可以完成编译打包了（当前稳定版是2.1.1，git切换到稳定版本分支），编译好的包就是target下的’aloha-tgz.zip’包，解压出来就是Jstorm，其实打成zip包之前的目录就是target/aloha-tgz/jstorm-{version}，这个目录就是Jstorm。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ <span class="built_in">cd</span> jstorm</div><div class="line">$ git checkout 2.1.1</div><div class="line">$ mvn clean package assembly:assembly -Dmaven.test.skip=<span class="literal">true</span></div></pre></td></tr></table></figure>
+<h2 id="三、Jstorm安装"><a href="#三、Jstorm安装" class="headerlink" title="三、Jstorm安装"></a>三、Jstorm安装</h2><p>将上一步编译打包好的zip包拷贝到部署目录，然后解压出来，就完成安装了。（稳定版本的zip包也可以直接从官网下载）</p>
+<h2 id="四、Jstorm配置"><a href="#四、Jstorm配置" class="headerlink" title="四、Jstorm配置"></a>四、Jstorm配置</h2><p>首先设置JSTORM_HOME环境变量，Jstorm本身多出依赖这个环境变量，在’~/.bashrc’中配置这个环境变量，在文件中添加一行’export JSTORM_HOME=/jstorm/install/path’，以下是我本机配置：</p>
+<blockquote>
+<p>export JSTORM_HOME=/home/zyb/zdata/jstorm-2.1.1</p>
+</blockquote>
+<p>然后就是storm的主要配置文件$JSTORM_HOME/conf/storm.yaml。</p>
+<h3 id="单实例配置"><a href="#单实例配置" class="headerlink" title="单实例配置"></a>单实例配置</h3><p>jstorm单实例基本配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">storm.zookeeper.servers:</div><div class="line">    - &quot;localhost&quot;</div><div class="line">storm.zookeeper.root: &quot;/zjstorm&quot;</div><div class="line">storm.local.dir: &quot;%JSTORM_HOME%/data&quot;</div></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>storm.zookeeper.servers</strong>: 表示zookeeper的地址。<br><strong>storm.zookeeper.root</strong>: 表示JStorm在zookeeper中的根目录，当多个JStorm集群共享一个zookeeper时，需要设置该选项，默认即为“/jstorm”。（建议生产环境配置独立的名称，以备后续的扩展需要）<br><strong>storm.local.dir</strong>: 表示JStorm临时数据存放目录，需要保证JStorm程序对该目录有写权限。<br><strong>jstorm.log.dir</strong>: 表示JStorm日志目录，默认为：$JSTORM_HOME/logs</p>
+</blockquote>
+<h1 id="（未完待续…）"><a href="#（未完待续…）" class="headerlink" title="（未完待续…）"></a>（未完待续…）</h1><h2 id="五、Jstorm运行"><a href="#五、Jstorm运行" class="headerlink" title="五、Jstorm运行"></a>五、Jstorm运行</h2><h2 id="六、参考资料"><a href="#六、参考资料" class="headerlink" title="六、参考资料"></a>六、参考资料</h2><p><a href="http://jstorm.io/quickstart_cn/Compile.html" target="_blank" rel="external">Jstorm QuickStart Compile</a><br><a href="http://jstorm.io/quickstart_cn/Deploy/Standalone.html" target="_blank" rel="external">Jstorm QuickStart Deploy</a><br><a href="https://github.com/alibaba/jstorm/wiki/JStorm-basics-in-5-min" target="_blank" rel="external">Jstorm basic in 5 min</a><br><a href="http://www.cnblogs.com/z-sm/p/5691768.html" target="_blank" rel="external">Jstorm安装与使用</a></p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Zookeeper从源码编译及配置部署]]></title>
+      <url>https://zyb.github.io/2016/12/06-zookeeper-install.html</url>
+      <content type="html"><![CDATA[<h2 id="一、环境"><a href="#一、环境" class="headerlink" title="一、环境"></a>一、环境</h2><ul>
 <li>当前zookeeper使用的是git上3.4.9这个tag，是当前稳定版本</li>
 <li>jdk为1.7版本</li>
 <li>archlinux x64 操作系统</li>
@@ -19,26 +47,26 @@
 <p>如果有需要用eclipse打开，可以使用下面命令生成eclipse的project，在eclipse中通过导入’已存在的eclipse项目‘，将zookeeper导入到eclipse中</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ <span class="built_in">cd</span> zookeeper</div><div class="line">$ ant eclipse</div></pre></td></tr></table></figure>
 <h2 id="三、Zookeeper部署"><a href="#三、Zookeeper部署" class="headerlink" title="三、Zookeeper部署"></a>三、Zookeeper部署</h2><p>将编译后的zookeeper目录或者.tar.gz包拷贝到将要部署的目录，即完成部署。多机（多进程）部署，就分别拷贝将要部署的目录即可。（上一步编译的.tar.gz包，如果不自己编译，可以直接从官网下载。）</p>
-<h2 id="Zookeeper配置"><a href="#Zookeeper配置" class="headerlink" title="Zookeeper配置"></a>Zookeeper配置</h2><p>以下分别针对单实例和多机配置说明。</p>
+<h2 id="四、Zookeeper配置"><a href="#四、Zookeeper配置" class="headerlink" title="四、Zookeeper配置"></a>四、Zookeeper配置</h2><p>以下分别针对单实例和多机配置说明。</p>
 <p>zookeeper主要的配置文件为conf目录下的zoo.conf。</p>
 <p>zookeeper在linux下的启动脚本为bin目录下的zkServer.sh，zookeeper相关的环境变量脚本为bin目录下的zkEnv.sh，zkServer.sh和zkEnv.sh脚本一般不需要修改，用于启动服务，主要修改zoo.conf。</p>
 <h3 id="zookeeper单实例配置"><a href="#zookeeper单实例配置" class="headerlink" title="zookeeper单实例配置"></a>zookeeper单实例配置</h3><p>zoo.conf配置非常简单。单实例配置如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tickTime=2000 </div><div class="line">dataDir=./zoodata</div><div class="line">clientPort=2181</div></pre></td></tr></table></figure>
 <blockquote>
-<p><em>tickTime</em>: 这个时间作为zookeeper服务端与客户端之间维持心跳的时间间隔，时间单位为：ms（毫秒），每隔tickTime时间就会发送一个心跳。<br><em>dataDir</em>: 这个是zookeeper保存数据的目录，默认情况下，zookeeper也将写数据的日志保存在这个目录下。<br><em>clientPort</em>: 这个作为客户端连接zookeeper服务器的端口。</p>
+<p><strong>tickTime</strong>: 这个时间作为zookeeper服务端与客户端之间维持心跳的时间间隔，时间单位为：ms（毫秒），每隔tickTime时间就会发送一个心跳。<br><strong>dataDir</strong>: 这个是zookeeper保存数据的目录，默认情况下，zookeeper也将写数据的日志保存在这个目录下。<br><strong>clientPort</strong>: 这个作为客户端连接zookeeper服务器的端口。</p>
 </blockquote>
 <h3 id="zookeeper集群配置"><a href="#zookeeper集群配置" class="headerlink" title="zookeeper集群配置"></a>zookeeper集群配置</h3><p>对于集群配置，只需要在单实例的基础上增加几个配置就可以了，如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">initLimit=10</div><div class="line">syncLimit=5</div><div class="line">server.1=192.168.0.1:2888:3888</div><div class="line">server.2=192.168.0.2:2888:3888</div></pre></td></tr></table></figure>
 <blockquote>
-<p><em>initLimit</em>: 这个配置项是用来配置 Zookeeper 接受客户端（这里所说的客户端不是用户连接 Zookeeper 服务器的客户端，而是 Zookeeper 服务器集群中连接到 Leader 的 Follower 服务器）初始化连接时最长能忍受多少个心跳时间间隔数。当已经超过 10 个心跳的时间（也就是 tickTime）长度后 Zookeeper 服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度就是 10x2000=20 秒<br><em>syncLimit</em>: 这个配置项标识 Leader 与 Follower 之间发送消息，请求和应答时间长度，最长不能超过多少个 tickTime 的时间长度，总的时间长度就是 5x2000=10 秒<br><em>server.N=A:P1:P2</em>, 其中 N 是一个数字，表示这个是第几号服务器；A 是这个服务器的 ip 地址；P1 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口；P2 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口。如果是伪集群的配置方式，由于 A 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号。<br>集群配置最重要的一点：对于集群配置，除了修改zoo.cfg外，还需要在dataDir目录下配置一个名字为’myid’的文件，这个文件里的值就是上个配置A的值，zookeeper 启动时会读取这个文件，拿到里面的数据与 zoo.cfg 里面的配置信息比较从而判断到底是那个server。</p>
+<p><strong>initLimit</strong>: 这个配置项是用来配置 Zookeeper 接受客户端（这里所说的客户端不是用户连接 Zookeeper 服务器的客户端，而是 Zookeeper 服务器集群中连接到 Leader 的 Follower 服务器）初始化连接时最长能忍受多少个心跳时间间隔数。当已经超过 10 个心跳的时间（也就是 tickTime）长度后 Zookeeper 服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度就是 10x2000=20 秒<br><strong>syncLimit</strong>: 这个配置项标识 Leader 与 Follower 之间发送消息，请求和应答时间长度，最长不能超过多少个 tickTime 的时间长度，总的时间长度就是 5x2000=10 秒<br><strong>server.N=A:P1:P2</strong>, 其中 N 是一个数字，表示这个是第几号服务器；A 是这个服务器的 ip 地址；P1 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口；P2 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口。如果是伪集群的配置方式，由于 A 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号。<br><strong>集群配置最重要的一点</strong>：对于集群配置，除了修改zoo.cfg外，还需要在dataDir目录下配置一个名字为’myid’的文件，这个文件里的值就是上个配置A的值，zookeeper 启动时会读取这个文件，拿到里面的数据与 zoo.cfg 里面的配置信息比较从而判断到底是那个server。</p>
 </blockquote>
-<h2 id="四、Zookeeper启动"><a href="#四、Zookeeper启动" class="headerlink" title="四、Zookeeper启动"></a>四、Zookeeper启动</h2><p>zookeeper命令：bin/zkServer.sh {start|start-foreground|stop|restart|status|upgrade|print-cmd}</p>
+<h2 id="五、Zookeeper启动"><a href="#五、Zookeeper启动" class="headerlink" title="五、Zookeeper启动"></a>五、Zookeeper启动</h2><p>zookeeper命令：bin/zkServer.sh {start|start-foreground|stop|restart|status|upgrade|print-cmd}</p>
 <p>启动zookeeper：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/zkServer.sh start</div></pre></td></tr></table></figure>
 <p>启动后查看zookeeper是否启动成功：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/zkServer.sh status</div></pre></td></tr></table></figure>
 <p>停止zookeeper：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/zkServer.sh stop</div></pre></td></tr></table></figure></p>
-<h2 id="五、参考资料"><a href="#五、参考资料" class="headerlink" title="五、参考资料"></a>五、参考资料</h2><p><a href="https://zookeeper.apache.org/doc/trunk/zookeeperStarted.html" target="_blank" rel="external">Apache Zookeeper GettingStart</a><br><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/" target="_blank" rel="external">分布式服务框架Zookeeper(IBM DevelopWorks中国)</a></p>
+<h2 id="六、参考资料"><a href="#六、参考资料" class="headerlink" title="六、参考资料"></a>六、参考资料</h2><p><a href="https://zookeeper.apache.org/doc/trunk/zookeeperStarted.html" target="_blank" rel="external">Apache Zookeeper GettingStart</a><br><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/" target="_blank" rel="external">分布式服务框架Zookeeper(IBM DevelopWorks中国)</a></p>
 <p>（完结）</p>
 ]]></content>
     </entry>

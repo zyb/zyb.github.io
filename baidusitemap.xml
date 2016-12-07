@@ -4,11 +4,31 @@
 
     
   <url>
-    <loc>https://zyb.github.io/2016/12/06-zookeeper-complier-install.html</loc>
-    <lastmod>2016-12-07T12:21:50.789Z</lastmod>
+    <loc>https://zyb.github.io/2016/12/07-jstorm-install.html</loc>
+    <lastmod>2016-12-07T14:33:33.409Z</lastmod>
     <data>
         <display>
-        <title>Zookeeper编译、部署、配置</title>
+        <title>Jstorm从源码编译及配置部署</title>
+        <pubTime>2016-12-07T12:40:57.000Z</pubTime>
+        
+        <tag>jstorm</tag>
+         
+         
+           
+             
+              <breadCrumb title="大数据" url="https://zyb.github.io/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zyb.github.io/2016/12/06-zookeeper-install.html</loc>
+    <lastmod>2016-12-07T13:55:48.270Z</lastmod>
+    <data>
+        <display>
+        <title>Zookeeper从源码编译及配置部署</title>
         <pubTime>2016-12-06T12:26:13.000Z</pubTime>
         
         <tag>zookeeper</tag>
