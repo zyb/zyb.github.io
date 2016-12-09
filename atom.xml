@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://zyb.github.io/"/>
-  <updated>2016-12-08T14:42:20.112Z</updated>
+  <updated>2016-12-09T06:58:30.460Z</updated>
   <id>https://zyb.github.io/</id>
   
   <author>
@@ -20,9 +20,10 @@
     <link href="https://zyb.github.io/2016/12/07-jstorm-install.html"/>
     <id>https://zyb.github.io/2016/12/07-jstorm-install.html</id>
     <published>2016-12-07T12:40:57.000Z</published>
-    <updated>2016-12-08T14:42:20.112Z</updated>
+    <updated>2016-12-09T06:58:30.460Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="一、环境"><a href="#一、环境" class="headerlink" title="一、环境"></a>一、环境</h2><ul>
+    <content type="html"><![CDATA[<p>虽然本文只是Jstorm的编译、配置、部署，但是仍需要对Storm的有基本的了解。</p>
+<h2 id="一、环境"><a href="#一、环境" class="headerlink" title="一、环境"></a>一、环境</h2><ul>
 <li>Jstorm使用的当前稳定版本2.1.1</li>
 <li>JDK使用1.7</li>
 <li>archlinux x64操作系统</li>
@@ -33,11 +34,14 @@
 <h3 id="源码编译"><a href="#源码编译" class="headerlink" title="源码编译"></a>源码编译</h3><p>Jstorm是java编写的，使用maven进行包管理，因此编译就比较简单了，直接通过下面得的maven命令就可以完成编译打包了（当前稳定版是2.1.1，git切换到稳定版本分支），编译好的包就是target下的’aloha-tgz.zip’包，解压出来就是Jstorm，其实打成zip包之前的目录就是target/aloha-tgz/jstorm-{version}，这个目录就是Jstorm。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ <span class="built_in">cd</span> jstorm</div><div class="line">$ git checkout 2.1.1</div><div class="line">$ mvn clean package assembly:assembly -Dmaven.test.skip=<span class="literal">true</span></div></pre></td></tr></table></figure>
 <h2 id="三、Jstorm安装"><a href="#三、Jstorm安装" class="headerlink" title="三、Jstorm安装"></a>三、Jstorm安装</h2><p>将上一步编译打包好的zip包拷贝到部署目录，然后解压出来，就完成安装了。（稳定版本的zip包也可以直接从官网下载）</p>
-<h2 id="四、Jstorm配置"><a href="#四、Jstorm配置" class="headerlink" title="四、Jstorm配置"></a>四、Jstorm配置</h2><p>本来第一步是要先配置JSTORM_HOME环境变量，但是根据后面的bin/jstorm启动脚本来看，这个环境变量并不需要，如果有需要可以配置：</p>
+<h2 id="四、Jstorm配置"><a href="#四、Jstorm配置" class="headerlink" title="四、Jstorm配置"></a>四、Jstorm配置</h2><p>根据官方文档第一步是要先配置JSTORM_HOME环境变量，但是根据后面的bin/jstorm启动脚本来看，这个环境变量并不需要。</p>
 <blockquote>
-<p>首先设置JSTORM_HOME环境变量，Jstorm本身运行多处依赖这个环境变量，在’~/.bashrc’中配置这个环境变量，在文件中添加一行’export JSTORM_HOME=/jstorm/install/path’，我的~/.bashrc的配置为：’export JSTORM_HOME=/home/zyb/zdata/jstorm-2.1.1’</p>
+<ul>
+<li>bin/jstorm是一个python脚本，作为Jstorm的启动脚本，2.1.1这个版本是通过bin/jstorm脚本自身的绝对路径反推出来JSTORM_HOME，因此这个环境变量在启动脚本中根本没有用到。</li>
+<li>在Jstorm服务启动时，bin/jstorm脚本将Jstorm的home目录作为参数传递给了Jstorm服务，其中使用的参数名称是’jstorm.home’，并且在Jstorm服务读取storm.yaml这个配置文件时，用’jstorm.home’的值替换掉了storm.yaml中的所有包含%JSTORM_HOME%这个字符串的配置，因此即使没有配置JSTORM_HOME，在配置文件中依然可以使用%JSTORM_HOME%。</li>
+</ul>
 </blockquote>
-<p>然后就是storm的主要配置文件$JSTORM_HOME/conf/storm.yaml，我的部署环境storm.yaml配置如下：</p>
+<p>然后就是storm的主要配置文件conf/storm.yaml，个人测试环境storm.yaml配置如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">storm.zookeeper.servers:</div><div class="line">    - &quot;localhost&quot;</div><div class="line">storm.zookeeper.root: &quot;/zjstorm&quot;</div><div class="line">storm.local.dir: &quot;%JSTORM_HOME%/data&quot;</div><div class="line">nimbus.host: 127.0.0.1</div><div class="line">nimbus.host.start.supervisor: true</div><div class="line">supervisor.slots.ports.base: 56800</div></pre></td></tr></table></figure>
 <p><strong>配置说明：</strong></p>
 <blockquote>
@@ -49,26 +53,31 @@
 <li>每个工作节点运行一个Supervisor，Supervisor负责监听从Nimbus分配给它执行的任务，据此启动或停止执行任务的工作进程。</li>
 </ul>
 <p><img src="/uploads/jstorm-framework.png" alt="Jstorm框架"></p>
-<p><strong>启动前一个很重要的步骤</strong>：需要在/etc/hosts将当前hostname配置为本机IP，确保’hostname -i’命令可以获取到正确的本机IP，而不是127.0.0.1，否则会导致Jstorm获取不到本机IP而启动失败，这个IP信息是用于在Zookeeper上注册相关信息。</p>
-<p>nimbus启动命令如下，查看$JSTORM_HOME/logs/nimbus.log检查有无错误（这个是默认日志路径，如果单独配置了日志路径，到配置的日志目录下查看）。</p>
+<p><strong>启动前最重要的一个设置</strong>：<br>在/etc/hosts将当前hostname配置为本机IP，确保’hostname -i’命令可以获取到正确的本机IP，而不是127.0.0.1，否则会导致Jstorm获取不到本机IP或者host而启动失败，导致失败的原因是：这个信息在Jstorm向Zookeeper上注册相关信息时的必要信息。而且Jstorm在内部其他多处也需要使用这个信息。</p>
+<p>nimbus启动命令如下，通过查看%JSTORM_HOME%/logs/nimbus.log检查有无错误（这个是默认日志路径，如果单独配置了日志路径，到配置的日志目录下查看）。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ nohup bin/jstorm nimbus &gt; /dev/null 2&gt;&amp;1 &amp;</div></pre></td></tr></table></figure>
-<p>supervisor启动命令如下，查看$JSTORM_HOME/logs/supervisor.log检查有无错误（这个是默认日志路径，如果单独配置了日志路径，到配置的日志目录下查看）。</p>
+<p>supervisor启动命令如下，查看%JSTORM_HOME%/logs/supervisor.log检查有无错误（这个是默认日志路径，如果单独配置了日志路径，到配置的日志目录下查看）。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ nohup bin/jstorm supervisor &gt; /dev/null 2&gt;&amp;1 &amp;</div></pre></td></tr></table></figure>
-<h4 id="Jstorm-2-1-1版本存在的bug："><a href="#Jstorm-2-1-1版本存在的bug：" class="headerlink" title="Jstorm 2.1.1版本存在的bug："></a>Jstorm 2.1.1版本存在的bug：</h4><ul>
-<li>在Jstorm启动失败的时候（比如当前主机ip由于是127.0.0.1的时候），这时Jstorm退出时并没有将Jstorm启动时在‘数据目录’下记录的pid文件删除，导致重新启动时，Jstorm检测到上次pid的文件，因此Jstorm会尝试杀掉这个pid的进程，但是其实这个Jstorm进程已经不存在，根据linux进程号的分配策略，这个进程号有可能又被分给了其他进程，那么这时这个进程就会因为这个原因被kill。这个pid不是在退出的shutdown hook中删除的？而是在启动的时候删除的？</li>
+<p>nimbus服务关闭命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ps -ef | grep NimbusServer | grep -v grep | awk <span class="string">'&#123;print $2&#125;'</span> | xargs <span class="built_in">kill</span></div></pre></td></tr></table></figure>
+<p>supervisor服务关闭命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ps -ef | grep Supervisor | grep -v grep | awk <span class="string">'&#123;print $2&#125;'</span> | xargs <span class="built_in">kill</span></div></pre></td></tr></table></figure>
+<h4 id="Jstorm-2-1-1版本的一个bug："><a href="#Jstorm-2-1-1版本的一个bug：" class="headerlink" title="Jstorm 2.1.1版本的一个bug："></a>Jstorm 2.1.1版本的一个bug：</h4><ul>
+<li>在Jstorm启动失败的时候（比如当前主机ip由于是127.0.0.1的时候），这时Jstorm退出时并没有将Jstorm启动时在‘数据目录’下记录的pid文件删除，导致重新启动时，Jstorm检测到上次pid的文件，因此Jstorm会尝试杀掉这个pid的进程，但是其实这个Jstorm进程已经不存在，根据linux进程号的分配策略，这个进程号有可能又被分给了其他进程，那么这时这个进程就会因为这个原因被kill。这个pid的删除并没有在shutdown hook中处理？</li>
 </ul>
-<h4 id="Jstorm可优化的问题："><a href="#Jstorm可优化的问题：" class="headerlink" title="Jstorm可优化的问题："></a>Jstorm可优化的问题：</h4><ul>
-<li>Jstorm需要本机hosts中要配置本机IP，而用于注册到zk，为何不顺便支持一下可配置？说不定多网卡就有这种需求了。</li>
+<h4 id="Jstorm-2-1-1中易用性问题："><a href="#Jstorm-2-1-1中易用性问题：" class="headerlink" title="Jstorm 2.1.1中易用性问题："></a>Jstorm 2.1.1中易用性问题：</h4><ul>
+<li>Jstorm需要本机hosts中要配置本机IP，而用于注册到zk，虽然在生产环境一般这种方式没问题，但是用户单机测试环境等IP不固定而是DHCP分配的场景，hosts中就不会设置或者设置是localhost，就会导致Jstorm启动失败，这个最好是可以配置了，默认使用从hosts中读取的方式。</li>
+<li>随后发现Jstorm中多出使用这种方式获取本机IP，DHCP测试环境下确实比较麻烦。</li>
 </ul>
 <h2 id="六、参考资料"><a href="#六、参考资料" class="headerlink" title="六、参考资料"></a>六、参考资料</h2><p><a href="http://jstorm.io/quickstart_cn/Compile.html" target="_blank" rel="external">Jstorm QuickStart Compile</a><br><a href="http://jstorm.io/quickstart_cn/Deploy/Standalone.html" target="_blank" rel="external">Jstorm QuickStart Deploy</a><br><a href="https://github.com/alibaba/jstorm/wiki/JStorm-basics-in-5-min" target="_blank" rel="external">Jstorm Basic in 5 minutes</a><br><a href="http://jstorm.io/Maintenance/Configuration.html" target="_blank" rel="external">Jstorm Configration</a></p>
+<p>（完结）</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;h2 id=&quot;一、环境&quot;&gt;&lt;a href=&quot;#一、环境&quot; class=&quot;headerlink&quot; title=&quot;一、环境&quot;&gt;&lt;/a&gt;一、环境&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;Jstorm使用的当前稳定版本2.1.1&lt;/li&gt;
-&lt;li&gt;JDK使用1.7&lt;/li&gt;
-&lt;li&gt;archlinu
+      &lt;p&gt;虽然本文只是Jstorm的编译、配置、部署，但是仍需要对Storm的有基本的了解。&lt;/p&gt;
+&lt;h2 id=&quot;一、环境&quot;&gt;&lt;a href=&quot;#一、环境&quot; class=&quot;headerlink&quot; title=&quot;一、环境&quot;&gt;&lt;/a&gt;一、环境&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Jstorm使
     
     </summary>
     
@@ -84,9 +93,10 @@
     <link href="https://zyb.github.io/2016/12/06-zookeeper-install.html"/>
     <id>https://zyb.github.io/2016/12/06-zookeeper-install.html</id>
     <published>2016-12-06T12:26:13.000Z</published>
-    <updated>2016-12-08T07:49:35.293Z</updated>
+    <updated>2016-12-09T06:59:16.958Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="一、环境"><a href="#一、环境" class="headerlink" title="一、环境"></a>一、环境</h2><ul>
+    <content type="html"><![CDATA[<p>虽然本文只是Zookeeper的编译、配置、部署，但是仍需要对Zookeeper的有基本的了解。</p>
+<h2 id="一、环境"><a href="#一、环境" class="headerlink" title="一、环境"></a>一、环境</h2><ul>
 <li>当前zookeeper使用的是git上3.4.9这个tag，是当前稳定版本</li>
 <li>jdk为1.7版本</li>
 <li>archlinux x64 操作系统</li>
@@ -131,9 +141,9 @@
     
     <summary type="html">
     
-      &lt;h2 id=&quot;一、环境&quot;&gt;&lt;a href=&quot;#一、环境&quot; class=&quot;headerlink&quot; title=&quot;一、环境&quot;&gt;&lt;/a&gt;一、环境&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;当前zookeeper使用的是git上3.4.9这个tag，是当前稳定版本&lt;/li&gt;
-&lt;li&gt;jdk为1.7版本
+      &lt;p&gt;虽然本文只是Zookeeper的编译、配置、部署，但是仍需要对Zookeeper的有基本的了解。&lt;/p&gt;
+&lt;h2 id=&quot;一、环境&quot;&gt;&lt;a href=&quot;#一、环境&quot; class=&quot;headerlink&quot; title=&quot;一、环境&quot;&gt;&lt;/a&gt;一、环境&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
     
     </summary>
     
