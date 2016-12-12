@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://zyb.github.io/"/>
-  <updated>2016-12-12T02:23:13.556Z</updated>
+  <updated>2016-12-12T03:00:07.207Z</updated>
   <id>https://zyb.github.io/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>apache Pig踩坑之旅</title>
+    <title>apache Pig踩坑之旅（以及pig特性描述）</title>
     <link href="https://zyb.github.io/2016/12/11-pig-trap.html"/>
     <id>https://zyb.github.io/2016/12/11-pig-trap.html</id>
     <published>2016-12-11T08:48:57.000Z</published>
-    <updated>2016-12-12T02:23:13.556Z</updated>
+    <updated>2016-12-12T03:00:07.207Z</updated>
     
     <content type="html"><![CDATA[<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><ul>
 <li>pig使用版本是0.16版本</li>
@@ -41,6 +41,11 @@
 <p><strong>原因分析</strong>：从之前对pig的了解，以及实际执行的现象看，foreach的嵌套在pig中进行了特殊的处理，跟外部的语句的处理有较大的区别，foreach嵌套的语句在一些情况会导致相关的数据全被加载到内存中处理，所以如果对嵌套执行的数据量比较大的话，可能导致OOM。具体的foreach嵌套的原理还没详细分析。</p>
 <p><strong>解决方案</strong>：对于foreach嵌套使用，虽然灵活，但是要慎重，避免这种情况的发生。比如上面的例子可以用下面的pig中的case语句替换实现：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">xf = foreach src generate a, b, c, d, case when (e is not null and (e==&apos;AD_SUCCESS&apos; or e==&apos;BID_FAILED&apos;)) then 1 else 0 end as fa, case when (e is not null and e==&apos;AD_SUCCESS&apos;) then 1 else 0 end as fb;</div><div class="line">xg = group xf by (a, b, c, d);</div><div class="line">x = foreach xg generate flatten(group), SUM(xf.fa), SUM(xf.fb);</div></pre></td></tr></table></figure>
+<h2 id="Pig有用的特性"><a href="#Pig有用的特性" class="headerlink" title="Pig有用的特性"></a>Pig有用的特性</h2><h3 id="1-pig在同一个load多个store上所进行的优化"><a href="#1-pig在同一个load多个store上所进行的优化" class="headerlink" title="1. pig在同一个load多个store上所进行的优化"></a>1. pig在同一个load多个store上所进行的优化</h3><p><strong>描述</strong>：考虑这样一种场景，读取一份原始数据，生成多张不同维度的报表，pig脚本写法就是：在一个pig脚本中，从一个数据源中load数据，分别对不同维度进行统计分析最终生成多个统计报表，也就是最终执行多个store。因为是同一份数据，因此如果直接写MapReduce，可能一个MapReduce就可以同时将这几个报表都生成了，那么pig最终会用一个MapReduce分析，还是不同的store会产生多个MapReduce？</p>
+<p><strong>结论</strong>：其实pig这方面优化做的很好，也是能够比hive性能高的一个方面，pig最终只会用一个mapreduce生成这个分析。这个能力来自于pig在执行之前，首先是会生成一个执行计划，执行计划阶段能够做很多优化，其中一项就是将能够合并的操作进行合并，对于这个场景，因为来自于同一数据源，pig在生成执行计划时能够识别这种可以的合并，最终只会有一个MapReduce执行。如果这操作在hive中实现，由于生成多张报表，因此必然会有多个SQL语句，因而必然会有多个MapReduce执行，而且pig在这方面的优化还不仅仅这是这个。</p>
+<h3 id="2-pig对控制语句支持的缺失"><a href="#2-pig对控制语句支持的缺失" class="headerlink" title="2. pig对控制语句支持的缺失"></a>2. pig对控制语句支持的缺失</h3><p><strong>描述</strong>：pig中并没有类似高级程序语言的控制语句，因此你不可能写出一个pig脚本，控制内部语句的执行流程，pig的语句只会逐条分析生成执行计划，然后执行。</p>
+<p><strong>结论</strong>：缺失控制语句，只能说是pig侧重的方向不同，这个可以通过用其他脚本配合pig使用来解决这个问题，比如pig+shell或者pig+python，都可以解决这个问题。</p>
+<h3 id="3-pig中有用的关键字describe"><a href="#3-pig中有用的关键字describe" class="headerlink" title="3. pig中有用的关键字describe"></a>3. pig中有用的关键字describe</h3><p><strong>描述</strong>：在理解的pig的基本语法和用法后，常用describe，不仅能够解决pig中的问题，而且有助于理解pig处理的机制。</p>
 <p>（持续补充中…）</p>
 ]]></content>
     
