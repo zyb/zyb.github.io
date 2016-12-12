@@ -4,6 +4,32 @@
   
     
     <entry>
+      <title><![CDATA[apache Pig踩坑之旅]]></title>
+      <url>https://zyb.github.io/2016/12/11-pig-trap.html</url>
+      <content type="html"><![CDATA[<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><ul>
+<li>pig使用版本是0.16版本</li>
+<li>jdk版本1.7</li>
+<li>archlinux x64操作系统</li>
+</ul>
+<h2 id="Pig坑"><a href="#Pig坑" class="headerlink" title="Pig坑"></a>Pig坑</h2><h3 id="1-在local模式同时执行多个pig脚本"><a href="#1-在local模式同时执行多个pig脚本" class="headerlink" title="1. 在local模式同时执行多个pig脚本"></a>1. 在local模式同时执行多个pig脚本</h3><p><strong>问题描述</strong>：如果在以local模式同时执行多个pig脚本，就部分脚本就有可能遇到类似下面的错误信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">org.apache.hadoop.util.DiskChecker$DiskErrorException: Could not find output/spill0.out in any of the configured local directories</div><div class="line">        at org.apache.hadoop.fs.LocalDirAllocator$AllocatorPerContext.getLocalPathToRead(LocalDirAllocator.java:<span class="number">429</span>)</div><div class="line">        at org.apache.hadoop.fs.LocalDirAllocator.getLocalPathToRead(LocalDirAllocator.java:<span class="number">160</span>)</div><div class="line">        at org.apache.hadoop.mapred.MapOutputFile.getSpillFile(MapOutputFile.java:<span class="number">107</span>)</div><div class="line">        at org.apache.hadoop.mapred.MapTask$MapOutputBuffer.mergeParts(MapTask.java:<span class="number">1614</span>)</div><div class="line">        at org.apache.hadoop.mapred.MapTask$MapOutputBuffer.flush(MapTask.java:<span class="number">1323</span>)</div><div class="line">        at org.apache.hadoop.mapred.MapTask$NewOutputCollector.close(MapTask.java:<span class="number">699</span>)</div><div class="line">        at org.apache.hadoop.mapred.MapTask.runNewMapper(MapTask.java:<span class="number">766</span>)</div><div class="line">        at org.apache.hadoop.mapred.MapTask.run(MapTask.java:<span class="number">370</span>)</div><div class="line">        at org.apache.hadoop.mapred.LocalJobRunner$Job.run(LocalJobRunner.java:<span class="number">212</span>)</div></pre></td></tr></table></figure>
+<p><strong>原因分析</strong>：local模式下所有pig脚本任务的起始jobID都是1，因此可以想像多个pig脚本执行的maprdeuce任务的临时目录就会出现冲突，因此会发生多个任务同时在操作一个文件。但是这个并不能算是pig的bug，因为一般local模式主要是为了测试和调试使用，</p>
+<p><strong>解决方案</strong>：最直接的解决方案，既然临时目录冲突，那就为每个pig脚本配置一个不同的临时目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set hadoop.tmp.dir &apos;/unique/tmp/path/hadoop-tmp&apos;;</div></pre></td></tr></table></figure>
+<h3 id="2-define关键字的坑"><a href="#2-define关键字的坑" class="headerlink" title="2. define关键字的坑"></a>2. define关键字的坑</h3><p><strong>问题描述</strong>：说是坑有点勉强，主要是理解define的本质，define可以定义pig的函数，在pig函数内部也会为每一行的关系命名，直接看下面的函数实例，可以看出每一行的关系名称基本类似’h_$M’这样的名称，而不是类似‘flatten_foreach’这样的固定的名称，如果写成固定的名称，多次调用这个函数，会出现关系名覆盖的问题，导致最终结果不符合预期。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">define FlattenFunc(MS) RETURNS M &#123;</div><div class="line">    h_$M = foreach $MS generate flatten($0) as (s:chararray, a:long, b:chararray, c:long, d:long);</div><div class="line">    $M = foreach h_$M generate s, ToDate(ToString(ToDate(a), &apos;yyyyMMddHH&apos;), &apos;yyyyMMddHH&apos;) as a, b..d;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p><strong>原因分析</strong>：define定义的并非一个函数，而是类似C语言中的define，是一个宏定义，这个在pig执行之前先将所有的difine进行字符串替换，其实最终执行的脚本都没有所谓的函数，如果在define里关系名称是固定的名称，如果在同一个脚本中多次调用，那么很明显，这个名字就在脚本中重复了，前面的关系将被后面同名的关系覆盖。</p>
+<p><strong>解决方案</strong>：理解define的本质含义：跟C语言中的difine类似，都是字符串的替换。</p>
+<h3 id="3-foreach嵌套的坑"><a href="#3-foreach嵌套的坑" class="headerlink" title="3. foreach嵌套的坑"></a>3. foreach嵌套的坑</h3><p><strong>问题描述</strong>：foreach嵌套语句导致OOM，例如下面的语句，原始数据比如是100W，group最终结果是一条，那么在有限的内存下就会产生OOM。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">xf = foreach src generate a, b, c, d, e;</div><div class="line">xg = group xf by (a, b, c, d);</div><div class="line">x = foreach xg &#123;</div><div class="line">	fa = filter xf by e is not null and (e==&apos;AD_SUCCESS&apos; or e==&apos;BID_FAILED&apos;);</div><div class="line">	fb = filter xf by e is not null and e==&apos;AD_SUCCESS&apos;;</div><div class="line">	generate flatten(group), COUNT(fa), COUNT(fb);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>原因分析</strong>：从之前对pig的了解，以及实际执行的现象看，foreach的嵌套在pig中进行了特殊的处理，跟外部的语句的处理有较大的区别，foreach嵌套的语句在一些情况会导致相关的数据全被加载到内存中处理，所以如果对嵌套执行的数据量比较大的话，可能导致OOM。具体的foreach嵌套的原理还没详细分析。</p>
+<p><strong>解决方案</strong>：对于foreach嵌套使用，虽然灵活，但是要慎重，避免这种情况的发生。比如上面的例子可以用下面的pig中的case语句替换实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">xf = foreach src generate a, b, c, d, case when (e is not null and (e==&apos;AD_SUCCESS&apos; or e==&apos;BID_FAILED&apos;)) then 1 else 0 end as fa, case when (e is not null and e==&apos;AD_SUCCESS&apos;) then 1 else 0 end as fb;</div><div class="line">xg = group xf by (a, b, c, d);</div><div class="line">x = foreach xg generate flatten(group), SUM(xf.fa), SUM(xf.fb);</div></pre></td></tr></table></figure>
+<p>（持续补充中…）</p>
+]]></content>
+    </entry>
+    
+    <entry>
       <title><![CDATA[CDH5.7.2 Hadoop源码编译]]></title>
       <url>https://zyb.github.io/2016/12/10-cdh-hadoop-compile.html</url>
       <content type="html"><![CDATA[<h2 id="一、环境"><a href="#一、环境" class="headerlink" title="一、环境"></a>一、环境</h2><ul>
