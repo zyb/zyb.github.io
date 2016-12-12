@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://zyb.github.io/"/>
-  <updated>2016-12-12T03:00:07.207Z</updated>
+  <updated>2016-12-12T03:08:24.150Z</updated>
   <id>https://zyb.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://zyb.github.io/2016/12/11-pig-trap.html"/>
     <id>https://zyb.github.io/2016/12/11-pig-trap.html</id>
     <published>2016-12-11T08:48:57.000Z</published>
-    <updated>2016-12-12T03:00:07.207Z</updated>
+    <updated>2016-12-12T03:08:24.150Z</updated>
     
     <content type="html"><![CDATA[<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><ul>
 <li>pig使用版本是0.16版本</li>
@@ -47,6 +47,7 @@
 <p><strong>结论</strong>：缺失控制语句，只能说是pig侧重的方向不同，这个可以通过用其他脚本配合pig使用来解决这个问题，比如pig+shell或者pig+python，都可以解决这个问题。</p>
 <h3 id="3-pig中有用的关键字describe"><a href="#3-pig中有用的关键字describe" class="headerlink" title="3. pig中有用的关键字describe"></a>3. pig中有用的关键字describe</h3><p><strong>描述</strong>：在理解的pig的基本语法和用法后，常用describe，不仅能够解决pig中的问题，而且有助于理解pig处理的机制。</p>
 <p>（持续补充中…）</p>
+<h2 id="Pig学习过程中参考的资料"><a href="#Pig学习过程中参考的资料" class="headerlink" title="Pig学习过程中参考的资料"></a>Pig学习过程中参考的资料</h2><p>《pig编程指南》<br>《hadoop权威指南》第三版<br><a href="https://www.zybuluo.com/BrandonLin/note/449340" target="_blank" rel="external">Pig完全入门</a></p>
 ]]></content>
     
     <summary type="html">
