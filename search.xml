@@ -27,7 +27,7 @@
 <h2 id="基本术语"><a href="#基本术语" class="headerlink" title="基本术语"></a>基本术语</h2><p>Storm通过一系列基本元素实现实时计算的目标，其中包括了Topology、Stream、Spout、Bolt、Tuple、worker、task、slot。</p>
 <h3 id="Stream"><a href="#Stream" class="headerlink" title="Stream"></a>Stream</h3><p>在JStorm当中，有对Stream的抽象，它是一个不间断的无界的连续Tuple，而JStorm在建模事件流时，把流中的事件抽象为Tuple。</p>
 <p><img src="http://images2015.cnblogs.com/blog/666745/201509/666745-20150915135843351-643602897.png" alt=""></p>
-<h3 id="Spout"><a href="#Spout" class="headerlink" title="Spout"></a>Spout</h3><p>在JStorm中，它认为每个Stream都有一个Stream的来源，即Tuple的源头，所以它将这个源头抽象为Spout，而Spout可能是一个消息中间件，如：MQ，Kafka等。并不断的发出消息，也可能是从某个队列中不断读取队列的元数据。</p>
+<h3 id="Spout和Bolt"><a href="#Spout和Bolt" class="headerlink" title="Spout和Bolt"></a>Spout和Bolt</h3><p>在JStorm中，它认为每个Stream都有一个Stream的来源，即Tuple的源头，所以它将这个源头抽象为Spout，而Spout可能是一个消息中间件，如：MQ，Kafka等。并不断的发出消息，也可能是从某个队列中不断读取队列的元数据。</p>
 <p>在有了Spout后，接下来如何去处理相关内容，以类似的思想，将JStorm的处理过程抽象为Bolt，Bolt可以消费任意数量的输入流， 只要将流方向导到该Bolt即可，同时，它也可以发送新的流给其他的Bolt使用，因而，我们只需要开启特定的Spout，将Spout流出的Tuple 导向特定的Bolt，然后Bolt对导入的流做处理后再导向其它的Bolt等。</p>
 <p>那么，通过上述描述，其实，我们可以用一个形象的比喻来理解这个流程。我们可以认为Spout就是一个个的水龙头，并且每个水龙头中的水是不同的，我们想要消费那种水就去开启对应的水龙头，然后使用管道将水龙头中的水导向一个水处理器，即Bolt，水处理器处理完后会再使用管道导向到另外的处理器或者落地到存储介质。</p>
 <p><img src="http://images2015.cnblogs.com/blog/666745/201509/666745-20150915140959179-1408063851.png" alt=""></p>
