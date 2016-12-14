@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://zyb.github.io/"/>
-  <updated>2016-12-13T14:24:14.372Z</updated>
+  <updated>2016-12-14T01:45:01.534Z</updated>
   <id>https://zyb.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://zyb.github.io/2016/12/12-jstorm-hello.html"/>
     <id>https://zyb.github.io/2016/12/12-jstorm-hello.html</id>
     <published>2016-12-12T03:19:02.000Z</published>
-    <updated>2016-12-13T14:24:14.372Z</updated>
+    <updated>2016-12-14T01:45:01.534Z</updated>
     
     <content type="html"><![CDATA[<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><ul>
 <li>Jstorm版本2.1.1</li>
@@ -93,7 +93,7 @@
 </li>
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.jstorm<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jstorm-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">  <span class="comment">&lt;!-- &lt;scope&gt;provided&lt;/scope&gt; --&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://yq.aliyun.com/articles/34083" target="_blank" rel="external">JStorm－介绍</a> <strong>强烈推荐，入门先看</strong> 本文多出引用来自于此<br><a href="https://github.com/alibaba/jstorm/blob/2.1.1/example/sequence-split-merge/src/main/java/com/alipay/dw/jstorm/example/sequence" target="_blank" rel="external">Jstorm Example</a> 本文示例部分代码参考于此<br><a href="http://blog.csdn.net/szzhaom/article/details/41792023" target="_blank" rel="external">JStorm - Hello Word</a> 本文示例部分代码参考于此<br><a href="http://www.voidcn.com/blog/wwwxxdddx/article/p-4881831.html" target="_blank" rel="external">JStorm介绍</a> <strong>强烈推荐，入门先看</strong><br><a href="http://www.voidcn.com/blog/wwwxxdddx/article/p-4881832.html" target="_blank" rel="external">JStorm之Nimbus简介</a> <strong>入门先看</strong><br><a href="http://www.voidcn.com/blog/wwwxxdddx/article/p-4881833.html" target="_blank" rel="external">JStorm之Supervisor简介</a> <strong>入门先看</strong><br><a href="http://jstorm.io/quickstart_cn/Example.html" target="_blank" rel="external">Jstorm官方Example</a>官网示例，基本没怎么参考，无力吐槽…<br><a href="https://github.com/alibaba/jstorm/wiki/JStorm-Chinese-Documentation" target="_blank" rel="external">Jstorm Github Wiki</a><br><a href="https://github.com/alibaba/jstorm/wiki/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5" target="_blank" rel="external">Jstorm基本概念</a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://yq.aliyun.com/articles/34083" target="_blank" rel="external">JStorm－介绍</a> <strong>强烈推荐，入门先看</strong> 本文多出引用来自于此<br><a href="https://github.com/alibaba/jstorm/blob/2.1.1/example/sequence-split-merge/src/main/java/com/alipay/dw/jstorm/example/sequence" target="_blank" rel="external">Jstorm Example</a> 本文示例部分代码参考于此<br><a href="http://mojijs.com/2016/10/219731/index.html" target="_blank" rel="external">Storm之Hello World：单词统计</a> 本文示例部分代码参考于此<br><a href="http://blog.csdn.net/szzhaom/article/details/41792023" target="_blank" rel="external">JStorm - Hello Word</a> 本文示例部分代码参考于此<br><a href="http://www.voidcn.com/blog/wwwxxdddx/article/p-4881831.html" target="_blank" rel="external">JStorm介绍</a> <strong>强烈推荐，入门先看</strong><br><a href="http://www.voidcn.com/blog/wwwxxdddx/article/p-4881832.html" target="_blank" rel="external">JStorm之Nimbus简介</a> <strong>入门先看</strong><br><a href="http://www.voidcn.com/blog/wwwxxdddx/article/p-4881833.html" target="_blank" rel="external">JStorm之Supervisor简介</a> <strong>入门先看</strong><br><a href="http://jstorm.io/quickstart_cn/Example.html" target="_blank" rel="external">Jstorm官方Example</a>官网示例，基本没怎么参考，无力吐槽…<br><a href="https://github.com/alibaba/jstorm/wiki/JStorm-Chinese-Documentation" target="_blank" rel="external">Jstorm Github Wiki</a><br><a href="https://github.com/alibaba/jstorm/wiki/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5" target="_blank" rel="external">Jstorm基本概念</a></p>
 <h2 id="拓展阅读"><a href="#拓展阅读" class="headerlink" title="拓展阅读"></a>拓展阅读</h2><p><a href="https://yq.aliyun.com/articles/66098?spm=5176.100240.searchblog.22.FjBOiE" target="_blank" rel="external">双11媒体大屏背后的数据技术与产品 </a><br><a href="https://yq.aliyun.com/articles/62693?spm=5176.100240.searchblog.36.FjBOiE" target="_blank" rel="external">JStorm，让大规模流处理成为可能 </a></p>
 ]]></content>
     
